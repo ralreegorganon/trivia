@@ -12,7 +12,7 @@ func CreateRouter(server *HTTPServer) (*mux.Router, error) {
 	r := mux.NewRouter()
 	m := map[string]map[string]HttpApiFunc{
 		"GET": {
-			"/trivia": server.GetTrivia,
+			"/api/trivia/random": server.GetRandomTrivia,
 		},
 	}
 
@@ -76,7 +76,7 @@ func httpError(w http.ResponseWriter, err error) {
 	}
 }
 
-func (s *HTTPServer) GetTrivia(w http.ResponseWriter, r *http.Request, vars map[string]string) error {
+func (s *HTTPServer) GetRandomTrivia(w http.ResponseWriter, r *http.Request, vars map[string]string) error {
 	thing, err := s.DB.GetRandomTrivia()
 
 	if err != nil {
