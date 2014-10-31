@@ -1,8 +1,6 @@
 package trivia
 
 import (
-	"os"
-
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 )
@@ -12,12 +10,7 @@ type DB struct {
 }
 
 func (db *DB) Open() error {
-	connectionString := os.Getenv("TRIVIA_CONNECTION_STRING")
-	if connectionString == "" {
-		connectionString = "user=trivia password=theansweris dbname=trivia timezone=UTC sslmode=disable"
-	}
-
-	d, err := sqlx.Connect("postgres", connectionString)
+	d, err := sqlx.Open("postgres", "timezone=UTC sslmode=disable")
 	if err != nil {
 		return err
 	}

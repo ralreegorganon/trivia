@@ -9,7 +9,10 @@ import (
 
 // Up is executed when this migration is applied
 func Up_20141030200300(txn *sql.Tx) {
-	file, _ := os.Open("trivia.txt")
+	file, err := os.Open("seeds/trivia.txt")
+	if err != nil {
+		panic(err)
+	}
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()

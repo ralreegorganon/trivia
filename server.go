@@ -80,7 +80,6 @@ func (s *HTTPServer) GetRandomTrivia(w http.ResponseWriter, r *http.Request, var
 	thing, err := s.DB.GetRandomTrivia()
 
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
 		return err
 	}
 
