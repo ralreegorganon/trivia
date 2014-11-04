@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -12,7 +13,9 @@ func CreateRouter(server *HTTPServer) (*mux.Router, error) {
 	r := mux.NewRouter()
 	m := map[string]map[string]HttpApiFunc{
 		"GET": {
-			"/api/trivia/random": server.GetRandomTrivia,
+			"/api/trivia/random":      server.GetRandomTrivia,
+			"/api/trivia":             server.GetAllTrivia,
+			"/api/trivia/{id:[0-9]+}": server.GetTrivia,
 		},
 	}
 
@@ -77,13 +80,42 @@ func httpError(w http.ResponseWriter, err error) {
 }
 
 func (s *HTTPServer) GetRandomTrivia(w http.ResponseWriter, r *http.Request, vars map[string]string) error {
-	thing, err := s.DB.GetRandomTrivia()
+	trivia, err := s.DB.GetRandomTrivia()
 
 	if err != nil {
 		return err
 	}
 
-	writeJSON(w, http.StatusOK, thing)
+	writeJSON(w, http.StatusOK, trivia)
 
 	return nil
+}
+
+func (s *HTTPServer) GetTrivia(w http.ResponseWriter, r *http.Request, vars map[string]string) error {
+	id, err := strconv.ParseInt(vars["id"], 10, 64)
+	trivia, err := s.DB.GetTrivia(id)
+
+	if err != nil {
+		return err
+	}
+
+	writeJSON(w, http.StatusOK, emberify("trivium", trivia))
+
+	return nil
+}
+
+func (s *HTTPServer) GetAllTrivia(w http.ResponseWriter, r *http.Request, vars map[string]string) error {
+	trivia, err := s.DB.GetAllTrivia()
+
+	if err != nil {
+		return err
+	}
+
+	writeJSON(w, http.StatusOK, emberify("trivia", trivia))
+
+	return nil
+}
+
+func emberify(name string, thing interface{}) interface{} {
+	return map[string]interface{}{name: thing}
 }
